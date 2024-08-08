@@ -23,7 +23,7 @@ const App = () => {
     dispatch(loadUser()); // Load user data on app load
   }, [dispatch]);
 
-  // test
+  // Liav Ya maniac!!!
 
   return (
     <Router>
