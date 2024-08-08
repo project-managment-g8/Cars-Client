@@ -1,10 +1,10 @@
 // client/src/App.js
-import React,{useEffect} from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { Container } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import LoginScreen from "./screens/LoginScreen";
@@ -16,13 +16,14 @@ import ForumScreen from "./screens/forumScreen";
 import loadUser from "./slices/auth";
 import PrivateRoute from "./components/PrivateRoute";
 
-const App = () => { 
-
+const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(loadUser()); // Load user data on app load
   }, [dispatch]);
+
+  // test
 
   return (
     <Router>
@@ -30,7 +31,7 @@ const App = () => {
       <main className="py-3">
         <Container>
           <Routes>
-          <Route element={<PrivateRoute />}>
+            <Route element={<PrivateRoute />}>
               <Route path="/forum" element={<ForumScreen />} />
             </Route>
             <Route path="/" element={<LoginScreen />} />
@@ -39,7 +40,7 @@ const App = () => {
             <Route element={<PrivateRoute />}>
               <Route path="/welcome" element={<WelcomeScreen />} />
             </Route>
-            <Route path="/profile/:userId" element={<ProfileScreen />}/>
+            <Route path="/profile/:userId" element={<ProfileScreen />} />
           </Routes>
         </Container>
       </main>
@@ -50,5 +51,3 @@ const App = () => {
 };
 
 export default App;
-
-
