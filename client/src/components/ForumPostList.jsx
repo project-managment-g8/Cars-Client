@@ -96,10 +96,12 @@ const ForumPostList = ({ forumPosts, setForumPosts, fetchForumPosts }) => {
                   <>
                     <button onClick={() => handleEditPost(post)}>Edit</button>
                     <button onClick={() => handleDeletePost(post._id)}>Delete</button>
-                    <button onClick={() => handleStickPost(post._id, !post.is_sticky)}>
-                      {post.is_sticky ? 'Unstick' : 'Stick'}
-                    </button>
                   </>
+                )}
+                  {(auth.user.role === 'moderator' || auth.user.role === 'admin') && (
+                  <button onClick={() => handleStickPost(post._id, !post.is_sticky)}>
+                    {post.is_sticky ? 'Unstick' : 'Stick'}
+                  </button>
                 )}
               </>
             )}

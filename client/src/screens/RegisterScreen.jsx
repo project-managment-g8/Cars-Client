@@ -36,7 +36,10 @@ const RegisterScreen = () => {
       toast.error('Passwords do not match');
       return;
     }
-
+    if (password.length < 8 || !password.match(/[A-Z]/) || !password.match(/[^A-Za-z0-9]/)) {
+      toast.error('Password must be at least 8 characters long, contain at least one uppercase letter, and one symbol.');
+      return;
+    }
     try {
       const response = await axios.post(`${apiBaseUrl}/api/users/register`, {
         userName,
