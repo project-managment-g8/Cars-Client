@@ -46,7 +46,7 @@ const EventList = ({ events, user, editEvent, deleteEvent }) => {
   return (
     <ul>
       {events.map((event) => (
-        <li key={event._id}>
+        <li key={event._id} style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#fff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
           <Link to={`/profile/${event.user?._id}`}>
             <strong>{event.user?.userName}</strong>
           </Link>
@@ -57,20 +57,23 @@ const EventList = ({ events, user, editEvent, deleteEvent }) => {
                 name="title"
                 value={editingEventDetails.title}
                 onChange={handleEditChange}
+                style={{ width: '100%', padding: '10px', borderRadius: '4px', borderColor: '#ccc', marginBottom: '10px' }}
               />
               <textarea
                 name="description"
                 value={editingEventDetails.description}
                 onChange={handleEditChange}
+                style={{ width: '100%', padding: '10px', borderRadius: '4px', borderColor: '#ccc', marginBottom: '10px' }}
               />
               <input
                 type="date"
                 name="date"
                 value={editingEventDetails.date}
                 onChange={handleEditChange}
+                style={{ width: '100%', padding: '10px', borderRadius: '4px', borderColor: '#ccc', marginBottom: '10px' }}
               />
-              <input type="file" onChange={handleImageChange} />
-              <button onClick={() => handleEditSubmit(event)}>Save</button>
+              <input type="file" onChange={handleImageChange} style={{ marginBottom: '10px' }} />
+              <button onClick={() => handleEditSubmit(event)} style={{ marginRight: '10px' }}>Save</button>
               <button onClick={() => setEditingEventId(null)}>Cancel</button>
             </>
           ) : (
@@ -78,12 +81,18 @@ const EventList = ({ events, user, editEvent, deleteEvent }) => {
               <h3>{event.title}</h3>
               <p>{event.description}</p>
               <p>{new Date(event.date).toLocaleDateString()}</p>
-              {event.image && <img src={`${apiBaseUrl}/api/uploads/${event.image}`} alt="Event" />}
+              {event.image && (
+                <img
+                  src={`${apiBaseUrl}/api/uploads/${event.image}`}
+                  alt="Event"
+                  style={{ width: '100%', maxWidth: '600px', borderRadius: '8px', marginTop: '10px' }}
+                />
+              )}
               {user && event.user && user._id === event.user._id && (
-                <>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                   <button onClick={() => handleEditClick(event)}>Edit</button>
                   <button onClick={() => deleteEvent(event._id)}>Delete</button>
-                </>
+                </div>
               )}
             </>
           )}

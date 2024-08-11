@@ -1,6 +1,6 @@
 // client/src/components/FeedbackForm.jsx
 import React, { useState } from 'react';
-// import '../assets/style/feedbackForm.css';
+import '../assets/style/form.css';
 
 const FeedbackForm = ({ submitFeedback }) => {
   const [feedback, setFeedback] = useState('');
@@ -12,7 +12,7 @@ const FeedbackForm = ({ submitFeedback }) => {
   };
 
   return (
-    <div className="feedback-form">
+    <div className="form-container">
       <textarea
         value={feedback}
         onChange={(e) => setFeedback(e.target.value)}

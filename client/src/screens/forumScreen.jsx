@@ -4,6 +4,7 @@ import ForumPostList from '../components/ForumPostList';
 import ForumPostForm from '../components/ForumPostForm';
 import { useSelector } from 'react-redux';
 import '../assets/style/Forum.css';
+import '../assets/style/form.css';
 import apiBaseUrl from '../constants';
 axios.defaults.withCredentials = true;
 
@@ -39,7 +40,7 @@ const Forum = () => {
   };
 
   return (
-    <div className="forum">
+    <div className="form-container">
       <h1>Forum</h1>
       <p>Welcome to the forum. Here you can ask questions and give advice to other users.</p>
       {auth.isAuthenticated && (

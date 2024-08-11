@@ -4,6 +4,9 @@ import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearUser, setUser } from '../slices/authSlice';
 import UploadForm from '../components/uploadForm';
+import PostList from '../components/PostList';
+import ForumPostList from '../components/ForumPostList';
+import EventList from '../components/eventList';
 import '../assets/style/profileScreen.css';
 import apiBaseUrl from '../constants';
 axios.defaults.withCredentials = true;
@@ -16,27 +19,88 @@ const ProfileScreen = () => {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [img, setImg] = useState('');
+  const [posts, setPosts] = useState([]);
+  const [forumPosts, setForumPosts] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
+  const [likedForumPosts, setLikedForumPosts] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [savedPosts, setSavedPosts] = useState([]);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const dispatch = useDispatch();
   const { user: loggedInUser } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const { data } = await axios.get(`${apiBaseUrl}/api/users/${userId}`,{withCredentials : true});
-        setProfileUser(data);
-        setUserName(data.userName);
-        setEmail(data.email);
-        setImg(data.img);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
+  const fetchUser = async () => {
+    try {
+      const { data } = await axios.get(`${apiBaseUrl}/api/users/${userId}`, { withCredentials: true });
+      setProfileUser(data);
+      setUserName(data.userName);
+      setEmail(data.email);
+      setImg(data.img);
 
+      // Fetch user's posts
+      const { data: userPosts } = await axios.get(`${apiBaseUrl}/api/posts/user/${userId}`, { withCredentials: true });
+      setPosts(userPosts);
+
+      // Fetch user's forum posts
+      const { data: userForumPosts } = await axios.get(`${apiBaseUrl}/api/forum/user/${userId}`, { withCredentials: true });
+      setForumPosts(userForumPosts);
+
+      // Fetch user's liked posts
+      const { data: userLikedPosts } = await axios.get(`${apiBaseUrl}/api/posts/liked/${userId}`, { withCredentials: true });
+      setLikedPosts(userLikedPosts);
+
+      // Fetch user's liked forum posts
+      const { data: userLikedForumPosts } = await axios.get(`${apiBaseUrl}/api/forum/liked/${userId}`, { withCredentials: true });
+      setLikedForumPosts(userLikedForumPosts);
+
+      // Fetch user's events
+      const { data: userEvents } = await axios.get(`${apiBaseUrl}/api/events/user/${userId}`, { withCredentials: true });
+      setEvents(userEvents);
+      
+      const { data: userSavedPosts } = await axios.get(`${apiBaseUrl}/api/posts/saved/${userId}`, { withCredentials: true });
+      setSavedPosts(userSavedPosts);
+    
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchUser();
   }, [userId]);
+
+  const handleModerator = async () => {
+    alert('Moderator button clicked');
+    try {
+      const response = await axios.put(`${apiBaseUrl}/api/users/make-moderator/${profileUser._id}`, {}, {
+        withCredentials: true,
+      });
+      setProfileUser(response.data.user); // Ensure profile user state is updated correctly
+      alert('User role updated to moderator');
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      if (error.response && error.response.status === 401) {
+        alert('Unauthorized. Please log in again.');
+      }
+    }
+  };
+
+  const handleUnmakeModerator = async () => {
+    try {
+      const response = await axios.put(`${apiBaseUrl}/api/users/unmake-moderator/${profileUser._id}`, {}, {
+        withCredentials: true,
+      });
+      setProfileUser(response.data.user); // Ensure profile user state is updated correctly
+      alert('User role updated to user');
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      if (error.response && error.response.status === 401) {
+        alert('Unauthorized. Please log in again.');
+      }
+    }
+  };
 
   const handleEditClick = () => setIsEditing(true);
 
@@ -56,7 +120,7 @@ const ProfileScreen = () => {
         withCredentials: true,
       });
       setProfileUser(response.data);
-      alert('Success');
+      alert('Profile updated successfully');
       dispatch(setUser(response.data));
       setIsEditing(false);
     } catch (error) {
@@ -117,7 +181,7 @@ const ProfileScreen = () => {
       alert('Error following user');
     }
   };
-  
+
   const handleUnfollow = async () => {
     try {
       const response = await axios.put(`${apiBaseUrl}/api/users/unfollow/${profileUser._id}`, {}, { withCredentials: true });
@@ -128,13 +192,12 @@ const ProfileScreen = () => {
       alert('Error unfollowing user');
     }
   };
+
   const handleImageError = (e) => {
     e.target.src = '/uploads/defaultprofile.png';
   };
+
   const isFollowing = loggedInUser?.following?.some(followedUser => followedUser._id === profileUser?._id);
-  console.log('loggedInUser:', loggedInUser);
-  console.log('profileUser:', profileUser);
-  console.log('isFollowing:', isFollowing);
 
   return (
     <div className="profile-container">
@@ -142,15 +205,15 @@ const ProfileScreen = () => {
         <>
           <h1>{profileUser.userName}</h1>
           <p>Email: {profileUser.email}</p>
-          <img 
-            src={`${apiBaseUrl}/api/uploads/${profileUser.img}`} 
-            alt="Profile" 
+          <img
+            src={`${apiBaseUrl}/api/uploads/${profileUser.img}`}
+            alt="Profile"
             className="profile-pic"
             onError={handleImageError}
           />
-          <p>Following: {profileUser.following.length}</p>
+          <p>Following: {profileUser.following?.length || 0}</p>
           <ul>
-            {profileUser.following.map(followedUser => (
+            {profileUser.following?.map(followedUser => (
               <li key={followedUser._id}>
                 <Link to={`/profile/${followedUser._id}`}>{followedUser.userName}</Link>
               </li>
@@ -159,6 +222,13 @@ const ProfileScreen = () => {
 
           {loggedInUser && loggedInUser._id !== profileUser._id && (
             <>
+              {loggedInUser.role === 'admin' && (
+                profileUser.role === 'moderator' ? (
+                  <button onClick={handleUnmakeModerator}>Unmake Moderator</button>
+                ) : (
+                  <button onClick={handleModerator}>Make Moderator</button>
+                )
+              )}
               {isFollowing ? (
                 <button onClick={handleUnfollow}>Unfollow</button>
               ) : (
@@ -231,6 +301,30 @@ const ProfileScreen = () => {
               )}
             </>
           )}
+
+          {/* Display user's posts */}
+          <h2>Posts</h2>
+          <PostList posts={posts} user={loggedInUser} showButtons = {false} />
+
+          {/* Display user's forum posts */}
+          <h2>Forum Posts</h2>
+          <ForumPostList forumPosts={forumPosts} setForumPosts={setForumPosts} fetchForumPosts={fetchUser} showButtons={false} />
+          
+          {/* Display user's liked posts */}
+          <h2>Liked Posts</h2>
+          <PostList posts={likedPosts} user={loggedInUser} showButtons = {false} />
+          
+          {/* Display user's liked forum posts */}
+          <h2>Liked Forum Posts</h2>
+          <ForumPostList forumPosts={likedForumPosts} setForumPosts={setForumPosts} fetchForumPosts={fetchUser}  showButtons = {false} />
+
+          {/* Display user's events */}
+          <h2>Events</h2>
+          <EventList events={events} user={loggedInUser} showButtons = {false} />
+
+          {/* Display saved posts */}
+          <h2>Saved Posts</h2>
+          <PostList posts={savedPosts} user={loggedInUser} setSavedPosts={setSavedPosts} showButtons={false} />
         </>
       ) : (
         <p>Loading...</p>

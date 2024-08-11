@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import '../assets/style/form.css';
 const EventForm = ({ addEvent }) => {
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -28,7 +28,7 @@ const EventForm = ({ addEvent }) => {
   };
 
   return (
-    <div className="event-form">
+    <div className="form-container">
       <input
         type="text"
         name="title"

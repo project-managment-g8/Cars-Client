@@ -1,7 +1,7 @@
 // client/src/components/PostForm.jsx
 import React, { useState } from 'react';
 import UploadForm from './uploadForm';
-// import '../assets/style/postForm.css';
+import '../assets/style/form.css';
 
 const PostForm = ({ addPost }) => {
   const [newPost, setNewPost] = useState({ content: '', img: null });
@@ -21,7 +21,7 @@ const PostForm = ({ addPost }) => {
   };
 
   return (
-    <div className="post-form">
+    <div className="form-container">
       <input
         type="text"
         name="content"

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import apiBaseUrl from '../constants';
-const PostList = ({ posts, user, likePost, deletePost, editPost,sharePost }) => {
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faThumbsUp, faEdit, faTrash, faSave, faShareSquare } from '@fortawesome/free-solid-svg-icons';
+const PostList = ({ posts, user, likePost, deletePost, editPost,sharePost,savedPosts =[] , setSavedPosts , showButtons = true }) => {
 
   const [editingPostId, setEditingPostId] = useState(null);
   const [editingPostContent, setEditingPostContent] = useState("");
@@ -33,10 +36,37 @@ const PostList = ({ posts, user, likePost, deletePost, editPost,sharePost }) => 
   const handleShare = async (post) => {
     await sharePost(post._id);
   };
+  const savePost = async (id) => {
+    try {
+        const response = await axios.put(`${apiBaseUrl}/api/posts/${id}/save`);
+        const { message } = response.data;
+
+        if (message === "Post saved") {
+            if (setSavedPosts) {
+                setSavedPosts(prev => [...prev, posts.find(post => post._id === id)]);
+            }
+        } else if (message === "Post unsaved") {
+            if (setSavedPosts) {
+                setSavedPosts(prev => prev.filter(post => post._id !== id));
+            }
+        }
+
+        alert(message);
+    } catch (error) {
+        console.error('Error saving post:', error);
+        alert('Error saving post');
+    }
+};
+  const isPostSaved = (postId) => {
+    console.log("Saved Posts:", savedPosts);
+    console.log("Checking Post ID:", postId);
+    console.log(savedPosts.some(post => post._id === postId));
+    return savedPosts.some(post => post._id === postId);
+  };
   return (
     <ul>
       {posts.map((post) => (
-        <li key={post._id}>
+        <li key={post._id} style={{ marginBottom: '20px', padding: '15px', border: '1px solid #ddd', borderRadius: '8px', backgroundColor: '#fff', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)' }}>
           <Link to={`/profile/${post.user?._id}`}>
             <strong>{post.user?.userName}</strong>
           </Link>
@@ -48,26 +78,40 @@ const PostList = ({ posts, user, likePost, deletePost, editPost,sharePost }) => 
               <textarea
                 value={editingPostContent}
                 onChange={handleEditChange}
+                style={{ width: '100%', padding: '10px', borderRadius: '4px', borderColor: '#ccc', marginBottom: '10px' }}
               />
-              <input type="file" onChange={handleImageChange} />
-              <button onClick={() => handleEditSubmit(post)}>Save</button>
+              <input type="file" onChange={handleImageChange} style={{ marginBottom: '10px' }} />
+              <button onClick={() => handleEditSubmit(post)} style={{ marginRight: '10px' }}>Save</button>
               <button onClick={() => setEditingPostId(null)}>Cancel</button>
             </>
           ) : (
             <>
               <p>{post.content}</p>
-              {post.image && <img src={`${apiBaseUrl}/api/uploads/${post.image}`} alt="Post" />}
-              <p>Likes: {post.likes.length}</p>
-              <button onClick={() => likePost(post._id)}>
-                {post.likes.includes(user._id) ? 'Unlike' : 'Like'}
-              </button>
-              {user && post.user && user._id === post.user._id && (
-                <>
-                  <button onClick={() => handleEditClick(post)}>Edit</button>
-                  <button onClick={() => deletePost(post._id)}>Delete</button>
-                </>
+              {post.image && (
+                <img
+                  src={`${apiBaseUrl}/api/uploads/${post.image}`}
+                  alt="Post"
+                  style={{ width: '100%', maxWidth: '600px', borderRadius: '8px', marginTop: '10px' }}
+                />
               )}
-              <button onClick={() => handleShare(post)}>Share</button>
+              <p>Likes: {post.likes.length}</p>
+              {showButtons && (
+                <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                  <button onClick={() => likePost(post._id)}>
+                    {post.likes.includes(user._id) ? 'Unlike' : 'Like'} <FontAwesomeIcon icon={faThumbsUp} />
+                  </button>
+                  {user && post.user && user._id === post.user._id && (
+                    <>
+                      <button onClick={() => handleEditClick(post)}>Edit <FontAwesomeIcon icon={faEdit} /></button>
+                      <button onClick={() => deletePost(post._id)}>Delete <FontAwesomeIcon icon={faTrash} /></button>
+                    </>
+                  )}
+                  <button onClick={() => savePost(post._id)}>
+                    {isPostSaved(post._id) ? 'Unsave' : 'Save'} <FontAwesomeIcon icon={faSave} />
+                  </button>
+                  <button onClick={() => handleShare(post)}>Share <FontAwesomeIcon icon={faShareSquare} /></button>
+                </div>
+              )}
             </>
           )}
         </li>

@@ -16,6 +16,7 @@ const WelcomeScreen = () => {
   const [events, setEvents] = useState([]);
   const [showPostForm, setShowPostForm] = useState(false);
   const [showEventForm, setShowEventForm] = useState(false);
+  const [savedPosts, setSavedPosts] = useState([]);  // Add savedPosts state
   const [showFeedbackForm, setShowFeedbackForm] = useState(false);
   const { user } = useAuth();
 
@@ -37,9 +38,17 @@ const WelcomeScreen = () => {
         console.error('Error fetching events:', error);
       }
     };
-
+    const fetchSavedPosts = async () => {
+      try {
+        const { data } = await axios.get(`${apiBaseUrl}/api/posts/saved/${user._id}`, { withCredentials: true });
+        setSavedPosts(data);
+      } catch (error) {
+        console.error('Error fetching saved posts:', error);
+      }
+    };
     fetchPosts();
     fetchEvents();
+    fetchSavedPosts();
   }, []);
 
   const submitFeedback = async (content) => {
@@ -170,6 +179,9 @@ const WelcomeScreen = () => {
           deletePost={deletePost}
           editPost={editPost}
           sharePost={sharePost}
+          savedPosts={savedPosts}
+          setSavedPosts={setSavedPosts}
+          showButtons={true}
         />
       </div>
       <div className="content">

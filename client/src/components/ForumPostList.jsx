@@ -92,7 +92,7 @@ const ForumPostList = ({ forumPosts, setForumPosts, fetchForumPosts }) => {
                 <button onClick={() => handleLikePost(post._id)}>
                   {post.likes.includes(auth.user._id) ? 'Unlike' : 'Like'} ({post.likes.length})
                 </button>
-                {auth.user._id === post.user._id && (
+                {(auth.user._id === post.user._id || auth.user.role === 'moderator' || auth.user.role === 'admin') && (
                   <>
                     <button onClick={() => handleEditPost(post)}>Edit</button>
                     <button onClick={() => handleDeletePost(post._id)}>Delete</button>
