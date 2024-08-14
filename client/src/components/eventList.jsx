@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import apiBaseUrl from '../constants';
-const EventList = ({ events, user, editEvent, deleteEvent }) => {
+const EventList = ({ events, user, editEvent, deleteEvent,showButtons = true }) => {
   const [editingEventId, setEditingEventId] = useState(null);
   const [editingEventDetails, setEditingEventDetails] = useState({
     title: '',
@@ -88,7 +88,7 @@ const EventList = ({ events, user, editEvent, deleteEvent }) => {
                   style={{ width: '100%', maxWidth: '600px', borderRadius: '8px', marginTop: '10px' }}
                 />
               )}
-              {user && event.user && user._id === event.user._id && (
+              {showButtons && user && event.user && user._id === event.user._id && (
                 <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                   <button onClick={() => handleEditClick(event)}>Edit</button>
                   <button onClick={() => deleteEvent(event._id)}>Delete</button>

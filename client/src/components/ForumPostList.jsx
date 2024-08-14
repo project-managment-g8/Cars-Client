@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import apiBaseUrl from '../constants';
 axios.defaults.withCredentials = true;
 
-const ForumPostList = ({ forumPosts, setForumPosts, fetchForumPosts }) => {
+const ForumPostList = ({ forumPosts, setForumPosts, fetchForumPosts , showButtons = true }) => {
   const auth = useSelector((state) => state.auth);
   const [editPost, setEditPost] = useState(null);
   const [editContent, setEditContent] = useState('');
@@ -83,31 +83,43 @@ const ForumPostList = ({ forumPosts, setForumPosts, fetchForumPosts }) => {
             {editPost && editPost._id === post._id ? (
               <>
                 <textarea value={editContent} onChange={(e) => setEditContent(e.target.value)} />
-                <button onClick={() => handleSaveEdit(post._id)}>Save</button>
-                <button onClick={() => setEditPost(null)}>Cancel</button>
+                {showButtons && (
+                  <>
+                    <button onClick={() => handleSaveEdit(post._id)}>Save</button>
+                    <button onClick={() => setEditPost(null)}>Cancel</button>
+                  </>
+                )}
               </>
             ) : (
               <>
                 <p>{post.content}</p>
-                <button onClick={() => handleLikePost(post._id)}>
-                  {post.likes.includes(auth.user._id) ? 'Unlike' : 'Like'} ({post.likes.length})
-                </button>
-                {(auth.user._id === post.user._id || auth.user.role === 'moderator' || auth.user.role === 'admin') && (
+                {showButtons && (
                   <>
-                    <button onClick={() => handleEditPost(post)}>Edit</button>
-                    <button onClick={() => handleDeletePost(post._id)}>Delete</button>
+                    <button onClick={() => handleLikePost(post._id)}>
+                      {post.likes.includes(auth.user._id) ? 'Unlike' : 'Like'} ({post.likes.length})
+                    </button>
+                    {(auth.user._id === post.user._id || auth.user.role === 'moderator' || auth.user.role === 'admin') && (
+                      <>
+                        <button onClick={() => handleEditPost(post)}>Edit</button>
+                        <button onClick={() => handleDeletePost(post._id)}>Delete</button>
+                      </>
+                    )}
+                    {(auth.user.role === 'moderator' || auth.user.role === 'admin') && (
+                      <button onClick={() => handleStickPost(post._id, !post.is_sticky)}>
+                        {post.is_sticky ? 'Unstick' : 'Stick'}
+                      </button>
+                    )}
                   </>
-                )}
-                  {(auth.user.role === 'moderator' || auth.user.role === 'admin') && (
-                  <button onClick={() => handleStickPost(post._id, !post.is_sticky)}>
-                    {post.is_sticky ? 'Unstick' : 'Stick'}
-                  </button>
                 )}
               </>
             )}
             <small>Posted by {post.user.userName} on {new Date(post.createdAt).toLocaleDateString()}</small>
-            <CommentList comments={post.comments} forumPostId={post._id} updateComments={updateComments} />
-            <CommentForm forumPostId={post._id} updateComments={updateComments} />
+            {showButtons && (
+              <>
+                <CommentList comments={post.comments} forumPostId={post._id} updateComments={updateComments} />
+                <CommentForm forumPostId={post._id} updateComments={updateComments} />
+              </>
+            )}
           </div>
         ))
       )}

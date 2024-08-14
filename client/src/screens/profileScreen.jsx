@@ -17,6 +17,7 @@ const ProfileScreen = () => {
   const [profileUser, setProfileUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [userName, setUserName] = useState('');
+  const [title,setTitle] = useState('');
   const [email, setEmail] = useState('');
   const [img, setImg] = useState('');
   const [posts, setPosts] = useState([]);
@@ -36,6 +37,7 @@ const ProfileScreen = () => {
       const { data } = await axios.get(`${apiBaseUrl}/api/users/${userId}`, { withCredentials: true });
       setProfileUser(data);
       setUserName(data.userName);
+      setTitle(data.title);
       setEmail(data.email);
       setImg(data.img);
 
@@ -108,6 +110,7 @@ const ProfileScreen = () => {
     setIsEditing(false);
     if (profileUser) {
       setUserName(profileUser.userName);
+      setTitle(profileUser.title);
       setEmail(profileUser.email);
       setImg(profileUser.img);
     }
@@ -116,7 +119,7 @@ const ProfileScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`${apiBaseUrl}/api/users/profile`, { userName, email, img }, {
+      const response = await axios.put(`${apiBaseUrl}/api/users/profile`, { userName,title, email, img }, {
         withCredentials: true,
       });
       setProfileUser(response.data);
@@ -204,6 +207,7 @@ const ProfileScreen = () => {
       {profileUser ? (
         <>
           <h1>{profileUser.userName}</h1>
+          <h2>{profileUser.title}</h2>
           <p>Email: {profileUser.email}</p>
           <img
             src={`${apiBaseUrl}/api/uploads/${profileUser.img}`}
@@ -247,6 +251,14 @@ const ProfileScreen = () => {
                       type="text"
                       value={userName}
                       onChange={(e) => setUserName(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Title:</label>
+                    <input
+                      type="title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
                     />
                   </div>
                   <div className="form-group">

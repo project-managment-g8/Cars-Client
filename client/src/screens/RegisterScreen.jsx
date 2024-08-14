@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 const RegisterScreen = () => {
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
+  const [title, setTitle] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -43,6 +44,7 @@ const RegisterScreen = () => {
     try {
       const response = await axios.post(`${apiBaseUrl}/api/users/register`, {
         userName,
+        title,
         email,
         password,
       });
@@ -70,6 +72,15 @@ const RegisterScreen = () => {
             placeholder="Enter username"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+        <Form.Group controlId="title" className="my-3">
+          <Form.Label>Title</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           ></Form.Control>
         </Form.Group>
         <Form.Group controlId="email" className="my-3">

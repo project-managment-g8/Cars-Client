@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import apiBaseUrl from '../constants';
+import '../assets/style/form.css';
 const ForumPostForm = ({ fetchForumPosts }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
