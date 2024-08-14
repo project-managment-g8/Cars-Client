@@ -223,7 +223,7 @@ const ProfileScreen = () => {
               </li>
             ))}
           </ul>
-
+          <p>Aggregate User Following Ratio: {profileUser.followingPercentage}%</p>
           {loggedInUser && loggedInUser._id !== profileUser._id && (
             <>
               {loggedInUser.role === 'admin' && (
