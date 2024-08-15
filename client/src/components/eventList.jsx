@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
+import axios from "axios";
 import { Link } from 'react-router-dom';
 import apiBaseUrl from '../constants';
 const EventList = ({ events, user, editEvent, deleteEvent,showButtons = true }) => {
@@ -9,6 +10,15 @@ const EventList = ({ events, user, editEvent, deleteEvent,showButtons = true }) 
     date: '',
   });
   const [editingEventImage, setEditingEventImage] = useState(null);
+  const [rsvpStatus, setRsvpStatus] = useState({});
+
+  useEffect(() => {
+    const initialRsvpStatus = {};
+    events.forEach(event => {
+      initialRsvpStatus[event._id] = event.rsvps.includes(user._id);
+    });
+    setRsvpStatus(initialRsvpStatus);
+  }, [events, user]);
 
   const handleEditClick = (event) => {
     setEditingEventId(event._id);
@@ -18,6 +28,22 @@ const EventList = ({ events, user, editEvent, deleteEvent,showButtons = true }) 
       date: event.date,
     });
     setEditingEventImage(null);
+  };
+  const handleRsvpToggle = async (eventId) => {
+    try {
+      if (rsvpStatus[eventId]) {
+        await axios.put(`/api/events/unrsvp/${eventId}`);
+        setRsvpStatus({ ...rsvpStatus, [eventId]: false });
+        alert("RSVP removed");
+      } else {
+        await axios.put(`/api/events/rsvp/${eventId}`);
+        setRsvpStatus({ ...rsvpStatus, [eventId]: true });
+        alert("RSVP successful!");
+      }
+    } catch (error) {
+      console.error("Error toggling RSVP:", error);
+      alert("Failed to update RSVP status");
+    }
   };
 
   const handleEditChange = (e) => {
@@ -88,6 +114,11 @@ const EventList = ({ events, user, editEvent, deleteEvent,showButtons = true }) 
                   style={{ width: '100%', maxWidth: '600px', borderRadius: '8px', marginTop: '10px' }}
                 />
               )}
+              <div style={{ display: 'flex', justifyContent: 'flex-start',marginTop: '10px' }}>
+                <button onClick={() => handleRsvpToggle(event._id)} style={{ padding: '8px 16px', borderRadius: '5px' }}>
+                  {rsvpStatus[event._id] ? "Remove RSVP" : "RSVP"}
+                </button>
+              </div>
               {showButtons && user && event.user && user._id === event.user._id && (
                 <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                   <button onClick={() => handleEditClick(event)}>Edit</button>
