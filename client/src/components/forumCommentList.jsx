@@ -12,7 +12,7 @@ const CommentList = ({ comments, forumPostId, updateComments }) => {
       await axios.delete(`${apiBaseUrl}/api/forumComments/${forumPostId}/comments/${commentId}`, {
         headers: { Authorization: `Bearer ${auth.user.token}` },
       });
-      const { data: updatedComments } = await axios.get(`${apiBaseUrl}/api/comments/${forumPostId}/comments`);
+      const { data: updatedComments } = await axios.get(`${apiBaseUrl}/api/forumComments/${forumPostId}/comments`);
       updateComments(forumPostId, updatedComments);
     } catch (error) {
       console.error("Error deleting comment:", error);

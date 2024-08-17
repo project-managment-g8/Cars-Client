@@ -18,6 +18,24 @@ const ForumPostList = ({ forumPosts, setForumPosts, fetchForumPosts , showButton
     );
     setForumPosts(updatedPosts);
   };
+  const [rating, setRating] = useState(0);
+
+  const handleRatePost = async (postId) => {
+    try {
+      const { data: updatedPost } = await axios.put(
+        `${apiBaseUrl}/api/forum/${postId}/rate`,
+        { rating },
+        {
+          headers: { Authorization: `Bearer ${auth.user.token}` },
+        }
+      );
+      setForumPosts(
+        forumPosts.map((post) => (post._id === postId ? updatedPost : post))
+      );
+    } catch (error) {
+      console.error("Error rating post:", error);
+    }
+  };
 
   const handleDeletePost = async (postId) => {
     try {
@@ -78,51 +96,71 @@ const ForumPostList = ({ forumPosts, setForumPosts, fetchForumPosts , showButton
       {forumPosts.length === 0 ? (
         <p>No posts to display</p>
       ) : (
-        forumPosts.map(post => (
-          <div key={post._id} className="forum-post">
-            <h2>{post.title}</h2>
-            {editPost && editPost._id === post._id ? (
-              <>
-                <textarea value={editContent} onChange={(e) => setEditContent(e.target.value)} />
-                {showButtons && (
-                  <>
-                    <button onClick={() => handleSaveEdit(post._id)}>Save</button>
-                    <button onClick={() => setEditPost(null)}>Cancel</button>
-                  </>
-                )}
-              </>
-            ) : (
-              <>
-                <p>{post.content}</p>
-                {showButtons && (
-                  <>
-                    <button onClick={() => handleLikePost(post._id)}>
-                      {post.likes.includes(auth.user._id) ? 'Unlike' : 'Like'} ({post.likes.length})
-                    </button>
-                    {(auth.user._id === post.user._id || auth.user.role === 'moderator' || auth.user.role === 'admin') && (
-                      <>
-                        <button onClick={() => handleEditPost(post)}>Edit</button>
-                        <button onClick={() => handleDeletePost(post._id)}>Delete</button>
-                      </>
-                    )}
-                    {(auth.user.role === 'moderator' || auth.user.role === 'admin') && (
-                      <button onClick={() => handleStickPost(post._id, !post.is_sticky)}>
-                        {post.is_sticky ? 'Unstick' : 'Stick'}
+        forumPosts.map(post => {
+          const ratings = post.ratings || []; // Ensure ratings is defined
+          const averageRating = ratings.length > 0
+            ? ratings.reduce((sum, { rating }) => sum + rating, 0) / ratings.length
+            : 0;
+
+          return (
+            <div key={post._id} className="forum-post">
+              <h2>{post.title}</h2>
+              {editPost && editPost._id === post._id ? (
+                <>
+                  <textarea value={editContent} onChange={(e) => setEditContent(e.target.value)} />
+                  {showButtons && (
+                    <>
+                      <button onClick={() => handleSaveEdit(post._id)}>Save</button>
+                      <button onClick={() => setEditPost(null)}>Cancel</button>
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p>{post.content}</p>
+                  <p>Rating: {averageRating.toFixed(1)}/5</p> {/* Display average rating */}
+                  {showButtons && (
+                    <>
+                      <select value={rating} onChange={(e) => setRating(e.target.value)}>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                      </select>
+                      <button onClick={() => handleRatePost(post._id)}>Rate</button>
+                    </>
+                  )}
+                  {showButtons && (
+                    <>
+                      <button onClick={() => handleLikePost(post._id)}>
+                        {post.likes.includes(auth.user._id) ? 'Unlike' : 'Like'} ({post.likes.length})
                       </button>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-            <small>Posted by {post.user.userName} on {new Date(post.createdAt).toLocaleDateString()}</small>
-            {showButtons && (
-              <>
-                <CommentList comments={post.comments} forumPostId={post._id} updateComments={updateComments} />
-                <CommentForm forumPostId={post._id} updateComments={updateComments} />
-              </>
-            )}
-          </div>
-        ))
+                      {(auth.user._id === post.user._id || auth.user.role === 'moderator' || auth.user.role === 'admin') && (
+                        <>
+                          <button onClick={() => handleEditPost(post)}>Edit</button>
+                          <button onClick={() => handleDeletePost(post._id)}>Delete</button>
+                        </>
+                      )}
+                      {(auth.user.role === 'moderator' || auth.user.role === 'admin') && (
+                        <button onClick={() => handleStickPost(post._id, !post.is_sticky)}>
+                          {post.is_sticky ? 'Unstick' : 'Stick'}
+                        </button>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+              <small>Posted by {post.user.userName} on {new Date(post.createdAt).toLocaleDateString()}</small>
+              {showButtons && (
+                <>
+                  <CommentList comments={post.comments} forumPostId={post._id} updateComments={updateComments} />
+                  <CommentForm forumPostId={post._id} updateComments={updateComments} />
+                </>
+              )}
+            </div>
+          );
+        })
       )}
     </div>
   );
