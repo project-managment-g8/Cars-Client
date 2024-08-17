@@ -1,4 +1,4 @@
-// client/src/components/CommentForm.jsx
+// client/src/components/forumCommentForm.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -11,13 +11,13 @@ const CommentForm = ({ forumPostId, updateComments }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data: newComment } = await axios.post(`${apiBaseUrl}/api/comments/${forumPostId}/comments`, { content, forumPostId }, {
+      const { data: newComment } = await axios.post(`${apiBaseUrl}/api/forumComments/${forumPostId}/comments`, { content, forumPostId }, {
         headers: {
           Authorization: `Bearer ${auth.user.token}`,
         },
       });
       setContent('');
-      const { data: comments } = await axios.get(`${apiBaseUrl}/api/comments/${forumPostId}/comments`);
+      const { data: comments } = await axios.get(`${apiBaseUrl}/api/forumComments/${forumPostId}/comments`);
       updateComments(forumPostId, comments);
     } catch (error) {
       console.error('Error creating comment:', error); // Log the error

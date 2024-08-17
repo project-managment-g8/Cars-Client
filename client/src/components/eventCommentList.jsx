@@ -1,19 +1,19 @@
-// client/src/components/CommentList.jsx
+// client/src/components/eventCommentList.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import apiBaseUrl from '../constants';
 
-const CommentList = ({ comments, forumPostId, updateComments }) => {
+const CommentList = ({ comments, eventId, updateComments }) => {
   const auth = useSelector((state) => state.auth);
 
   const handleDelete = async (commentId) => {
     try {
-      await axios.delete(`${apiBaseUrl}/api/comments/${forumPostId}/comments/${commentId}`, {
+      await axios.delete(`${apiBaseUrl}/api/eventComments/${eventId}/comments/${commentId}`, {
         headers: { Authorization: `Bearer ${auth.user.token}` },
       });
-      const { data: updatedComments } = await axios.get(`${apiBaseUrl}/api/comments/${forumPostId}/comments`);
-      updateComments(forumPostId, updatedComments);
+      const { data: updatedComments } = await axios.get(`${apiBaseUrl}/api/eventComments/${eventId}/comments`);
+      updateComments(eventId, updatedComments);
     } catch (error) {
       console.error("Error deleting comment:", error);
     }
@@ -21,22 +21,22 @@ const CommentList = ({ comments, forumPostId, updateComments }) => {
 
   const handleEdit = async (commentId, content) => {
     try {
-      await axios.put(`${apiBaseUrl}/api/comments/${forumPostId}/comments/${commentId}`, { content }, {
+      await axios.put(`${apiBaseUrl}/api/eventComments/${eventId}/comments/${commentId}`, { content }, {
         headers: { Authorization: `Bearer ${auth.user.token}` },
       });
-      const { data: updatedComments } = await axios.get(`${apiBaseUrl}/api/comments/${forumPostId}/comments`);
-      updateComments(forumPostId, updatedComments);
+      const { data: updatedComments } = await axios.get(`${apiBaseUrl}/api/eventComments/${eventId}/comments`);
+      updateComments(eventId, updatedComments);
     } catch (error) {
       console.error("Error updating comment:", error);
     }
   };
   const handleLike = async (commentId) => {
     try {
-      await axios.put(`${apiBaseUrl}/api/comments/${forumPostId}/comments/${commentId}/like`, {}, {
+      await axios.put(`${apiBaseUrl}/api/eventComments/${eventId}/comments/${commentId}/like`, {}, {
         headers: { Authorization: `Bearer ${auth.user.token}` },
       });
-      const { data: updatedComments } = await axios.get(`${apiBaseUrl}/api/comments/${forumPostId}/comments`);
-      updateComments(forumPostId, updatedComments);
+      const { data: updatedComments } = await axios.get(`${apiBaseUrl}/api/eventComments/${eventId}/comments`);
+      updateComments(eventId, updatedComments);
     } catch (error) {
       console.error("Error liking comment:", error);
     }
@@ -44,13 +44,14 @@ const CommentList = ({ comments, forumPostId, updateComments }) => {
   return (
     <div className="comment-list">
       {comments.map(comment => (
-        <Comment key={comment._id} comment={comment} forumPostId={forumPostId} handleDelete={handleDelete} handleEdit={handleEdit} handleLike={handleLike} />
+        console.log(comment.content , comment.userName),
+        <Comment key={comment._id} comment={comment} eventId={eventId} handleDelete={handleDelete} handleEdit={handleEdit} handleLike={handleLike} />
       ))}
     </div>
   );
 };
 
-const Comment = ({ comment, forumPostId, handleDelete, handleEdit ,handleLike}) => {
+const Comment = ({ comment, eventId, handleDelete, handleEdit ,handleLike}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
   const auth = useSelector((state) => state.auth);

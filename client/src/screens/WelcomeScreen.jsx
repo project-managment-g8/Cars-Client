@@ -1,3 +1,4 @@
+// client/src/screens/WelcomeScreen.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PostList from '../components/PostList';
@@ -24,6 +25,7 @@ const WelcomeScreen = () => {
     const fetchPosts = async () => {
       try {
         const { data } = await axios.get(`${apiBaseUrl}/api/posts` ,{ withCredentials: true });
+        console.log(data);
         setPosts(data);
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -33,6 +35,7 @@ const WelcomeScreen = () => {
     const fetchEvents = async () => {
       try {
         const { data } = await axios.get(`${apiBaseUrl}/api/events`);
+        console.log("posts:",data);
         setEvents(data);
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -192,7 +195,7 @@ const WelcomeScreen = () => {
           </button>
         </h1>
         {showEventForm && <EventForm addEvent={addEvent} />}
-        <EventList events={events} user={user} editEvent={editEvent} deleteEvent={deleteEvent} />
+        <EventList events={events} user={user} setEvents={setEvents} editEvent={editEvent} deleteEvent={deleteEvent} />
       </div>
       <div className="feedback-section">
         <h2>

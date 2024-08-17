@@ -35,7 +35,10 @@ const ProfileScreen = () => {
   const fetchUser = async () => {
     try {
       const { data } = await axios.get(`${apiBaseUrl}/api/users/${userId}`, { withCredentials: true });
-      setProfileUser(data);
+      setProfileUser({
+        ...data,
+        createdAt: new Date(data.createdAt),  // Convert to Date object if necessary
+      });
       setUserName(data.userName);
       setTitle(data.title);
       setEmail(data.email);
@@ -209,6 +212,7 @@ const ProfileScreen = () => {
           <h1>{profileUser.userName}</h1>
           <h2>{profileUser.title}</h2>
           <p>Email: {profileUser.email}</p>
+          <p>Joined on: {profileUser.createdAt.toLocaleDateString()}</p>
           <img
             src={`${apiBaseUrl}/api/uploads/${profileUser.img}`}
             alt="Profile"

@@ -27,8 +27,11 @@ const NotificationIcon = () => {
         console.error("Error fetching notifications:", error);
       }
     };
-
+  
     fetchNotifications();
+    
+    const intervalId = setInterval(fetchNotifications, 6000); // Fetch notifications every minute
+    return () => clearInterval(intervalId); // Clean up on component unmount
   }, [auth.user.token]);
 
   const toggleNotifications = async () => {
@@ -64,7 +67,6 @@ const NotificationIcon = () => {
       console.error("Error clearing notifications:", error);
     }
   };
-
   const getNotificationMessage = (notification) => {
     if (!notification.sender) {
       return "Notification";
@@ -73,13 +75,20 @@ const NotificationIcon = () => {
       return `${
         notification.sender?.userName ?? "Someone"
       } followed your profile`;
+    } else if (notification.type === "eventRsvp") {
+      return `${
+        notification.sender?.userName ?? "Someone"
+      } confirmed your RSVP to the event: ${notification.event?.title}`;
+    } else if (notification.type === "eventReminder") {
+      return `${
+        notification.sender?.userName ?? "Someone"
+      } reminded you about the event: ${notification.event?.title} happening tomorrow.`;
     } else {
       return `${notification.sender?.userName ?? "Someone"} ${
         notification.type
       }ed your ${notification.post ? "post" : "comment"}`;
     }
   };
-
   return (
     <>
       <div

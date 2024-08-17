@@ -1,6 +1,7 @@
+// client/src/components/ForumPostList.jsx
 import React, { useState } from 'react';
-import CommentList from './commentList';
-import CommentForm from './commentForm';
+import CommentList from './forumCommentList.jsx';
+import CommentForm from './forumCommentForm.jsx';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import apiBaseUrl from '../constants';

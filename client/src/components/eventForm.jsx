@@ -1,3 +1,4 @@
+// client/src/components/eventForm.jsx
 import React, { useState } from 'react';
 import '../assets/style/form.css';
 const EventForm = ({ addEvent }) => {
