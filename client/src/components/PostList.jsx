@@ -40,7 +40,6 @@ const PostList = ({ posts, user, likePost, deletePost, editPost,sharePost,savedP
     try {
         const response = await axios.put(`${apiBaseUrl}/api/posts/${id}/save`);
         const { message } = response.data;
-
         if (message === "Post saved") {
             if (setSavedPosts) {
                 setSavedPosts(prev => [...prev, posts.find(post => post._id === id)]);
