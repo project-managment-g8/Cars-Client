@@ -97,6 +97,7 @@ const WelcomeScreen = () => {
     try {
       const { data } = await axios.put(`${apiBaseUrl}/api/posts/${id}/like`);
       setPosts((prevPosts) => prevPosts.map((post) => (post._id === id ? data : post)));
+      alert('like post successfully');
     } catch (error) {
       console.error('Error liking post:', error);
     }
