@@ -45,6 +45,7 @@ const ForumPostList = ({ forumPosts, setForumPosts, fetchForumPosts , showButton
         },
       });
       setForumPosts(forumPosts.filter(post => post._id !== postId));
+      alert('delete forum post successfully');
     } catch (error) {
       console.error('Error deleting post:', error);
     }
@@ -63,6 +64,7 @@ const ForumPostList = ({ forumPosts, setForumPosts, fetchForumPosts , showButton
         },
       });
       setForumPosts(forumPosts.map(post => post._id === postId ? updatedPost : post));
+      alert('edit forum post successfully');
       setEditPost(null);
     } catch (error) {
       console.error('Error editing post:', error);
@@ -75,6 +77,7 @@ const ForumPostList = ({ forumPosts, setForumPosts, fetchForumPosts , showButton
         headers: { Authorization: `Bearer ${auth.user.token}` },
       });
       setForumPosts(forumPosts.map(post => post._id === postId ? updatedPost : post));
+      alert('like forum post successfully');
     } catch (error) {
       console.error("Error liking post:", error);
     }
@@ -86,6 +89,7 @@ const ForumPostList = ({ forumPosts, setForumPosts, fetchForumPosts , showButton
         headers: { Authorization: `Bearer ${auth.user.token}` },
       });
       fetchForumPosts(); // Re-fetch forum posts to update the order
+      alert('stick post successfully');
     } catch (error) {
       console.error("Error sticking post:", error);
     }

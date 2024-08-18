@@ -14,6 +14,7 @@ const CommentList = ({ comments, forumPostId, updateComments }) => {
       });
       const { data: updatedComments } = await axios.get(`${apiBaseUrl}/api/forumComments/${forumPostId}/comments`);
       updateComments(forumPostId, updatedComments);
+      alert('delete comment successfully');
     } catch (error) {
       console.error("Error deleting comment:", error);
     }
@@ -26,6 +27,7 @@ const CommentList = ({ comments, forumPostId, updateComments }) => {
       });
       const { data: updatedComments } = await axios.get(`${apiBaseUrl}/api/forumComments/${forumPostId}/comments`);
       updateComments(forumPostId, updatedComments);
+      alert('edit comment successfully');
     } catch (error) {
       console.error("Error updating comment:", error);
     }
@@ -37,6 +39,8 @@ const CommentList = ({ comments, forumPostId, updateComments }) => {
       });
       const { data: updatedComments } = await axios.get(`${apiBaseUrl}/api/forumComments/${forumPostId}/comments`);
       updateComments(forumPostId, updatedComments);
+      alert('like comment successfully');
+
     } catch (error) {
       console.error("Error liking comment:", error);
     }

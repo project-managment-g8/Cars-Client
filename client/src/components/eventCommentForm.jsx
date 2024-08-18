@@ -19,6 +19,7 @@ const CommentForm = ({ eventId, updateComments }) => {
       setContent('');
       const { data: comments } = await axios.get(`${apiBaseUrl}/api/eventComments/${eventId}/comments`);
       updateComments(eventId, comments);
+      alert('add comment successfully');
     } catch (error) {
       console.error('Error creating comment:', error); // Log the error
     }

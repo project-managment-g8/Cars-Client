@@ -19,6 +19,7 @@ const CommentForm = ({ forumPostId, updateComments }) => {
       setContent('');
       const { data: comments } = await axios.get(`${apiBaseUrl}/api/forumComments/${forumPostId}/comments`);
       updateComments(forumPostId, comments);
+      alert('create comment successfully');
     } catch (error) {
       console.error('Error creating comment:', error); // Log the error
     }
